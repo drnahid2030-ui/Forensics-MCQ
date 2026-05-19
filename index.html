@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#0d1b2a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Forensic MCQ"/>
+<meta name="description" content="Forensic Medicine MCQ Quiz App 2026"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<title>Forensic MCQ 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0d1b2a;
+  --surface: #1a2d45;
+  --surface2: #243d5c;
+  --accent: #00e5ff;
+  --accent2: #ff6b35;
+  --green: #00e676;
+  --red: #ff5252;
+  --text: #e8f4f8;
+  --text2: #8fb4cc;
+  --border: rgba(0,229,255,0.15);
+  --radius: 16px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height:100%; overflow:hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-y: auto;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(0,229,255,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(255,107,53,0.05) 0%, transparent 50%);
+}
+
+/* SCREENS */
+.screen { display:none; min-height:100vh; padding:20px; flex-direction:column; }
+.screen.active { display:flex; }
+
+/* ── HOME ── */
+#home {
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:0;
+}
+.logo-ring {
+  width:110px; height:110px;
+  border-radius:50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:46px;
+  box-shadow: 0 0 40px rgba(0,229,255,0.3);
+  margin-bottom:24px;
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 40px rgba(0,229,255,0.3); }
+  50% { box-shadow: 0 0 70px rgba(0,229,255,0.55); }
+}
+.home-title {
+  font-family:'Syne', sans-serif;
+  font-size:32px; font-weight:800;
+  background: linear-gradient(135deg, var(--accent), #7b9fff);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  line-height:1.1; margin-bottom:8px;
+}
+.home-sub {
+  font-size:13px; color:var(--text2);
+  margin-bottom:32px; letter-spacing:0.5px;
+}
+.stat-row {
+  display:flex; gap:12px; margin-bottom:36px; width:100%; max-width:320px;
+}
+.stat-box {
+  flex:1; background:var(--surface);
+  border:1px solid var(--border); border-radius:12px;
+  padding:14px 8px; text-align:center;
+}
+.stat-num {
+  font-family:'Syne',sans-serif; font-size:22px; font-weight:800;
+  color:var(--accent);
+}
+.stat-lbl { font-size:11px; color:var(--text2); margin-top:2px; }
+
+.btn-primary {
+  width:100%; max-width:320px;
+  padding:18px; border:none; border-radius:var(--radius);
+  background: linear-gradient(135deg, var(--accent), #1a9fff);
+  color:#0d1b2a; font-family:'Syne',sans-serif;
+  font-size:16px; font-weight:700;
+  cursor:pointer; letter-spacing:0.5px;
+  box-shadow: 0 4px 20px rgba(0,229,255,0.35);
+  transition: transform .15s, box-shadow .15s;
+  margin-bottom:12px;
+}
+.btn-primary:active { transform:scale(0.97); }
+
+.btn-sec {
+  width:100%; max-width:320px;
+  padding:16px; border:1.5px solid var(--border); border-radius:var(--radius);
+  background:transparent; color:var(--text2);
+  font-family:'Syne',sans-serif; font-size:14px; font-weight:600;
+  cursor:pointer; transition: border-color .2s, color .2s;
+  margin-bottom:12px;
+}
+.btn-sec:active { border-color:var(--accent); color:var(--accent); }
+
+.topic-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; width:100%; max-width:320px; margin-bottom:32px;
+}
+.topic-chip {
+  padding:10px 8px; border-radius:10px;
+  background:var(--surface); border:1.5px solid var(--border);
+  font-size:11px; color:var(--text2); text-align:center;
+  cursor:pointer; transition:.2s;
+  font-weight:500;
+}
+.topic-chip.selected {
+  border-color:var(--accent); color:var(--accent);
+  background:rgba(0,229,255,0.08);
+}
+.section-label {
+  font-family:'Syne',sans-serif; font-size:12px;
+  color:var(--text2); letter-spacing:1.5px; text-transform:uppercase;
+  margin-bottom:12px; align-self:flex-start;
+  width:100%; max-width:320px;
+}
+
+/* ── QUIZ ── */
+#quiz { padding:0; }
+.quiz-header {
+  background:var(--surface);
+  padding:16px 20px 12px;
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:10;
+}
+.quiz-top {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+.quiz-topic-tag {
+  font-size:10px; color:var(--accent); font-weight:600;
+  background:rgba(0,229,255,0.1); border-radius:20px;
+  padding:3px 10px; letter-spacing:0.5px;
+}
+.timer-wrap {
+  display:flex; align-items:center; gap:6px;
+  font-family:'Syne',sans-serif; font-size:16px; font-weight:700;
+}
+.timer-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--green); animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.timer-dot.warn { background:var(--red); }
+.timer-num { color:var(--text); }
+.timer-num.warn { color:var(--red); }
+
+.progress-bar-wrap {
+  background:rgba(255,255,255,0.07); border-radius:4px; height:5px;
+}
+.progress-bar-fill {
+  height:100%; border-radius:4px;
+  background:linear-gradient(90deg, var(--accent), #7b9fff);
+  transition: width 0.3s;
+}
+.q-counter {
+  font-size:11px; color:var(--text2); margin-top:6px;
+}
+
+.quiz-body { padding:20px; }
+.q-number {
+  font-size:11px; color:var(--accent2); font-weight:600;
+  letter-spacing:1px; margin-bottom:8px;
+}
+.q-text {
+  font-family:'Syne',sans-serif; font-size:17px;
+  font-weight:600; line-height:1.5;
+  color:var(--text); margin-bottom:20px;
+}
+.options-list { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+.opt-btn {
+  padding:15px 16px;
+  border-radius:var(--radius);
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  color:var(--text); font-size:14px;
+  font-family:'DM Sans',sans-serif;
+  text-align:left; cursor:pointer;
+  display:flex; align-items:center; gap:12px;
+  transition: border-color .15s, background .15s, transform .1s;
+  line-height:1.4;
+}
+.opt-btn:active:not([disabled]) { transform:scale(0.98); }
+.opt-label {
+  width:26px; height:26px; border-radius:50%;
+  background:rgba(255,255,255,0.07);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:12px; font-weight:700;
+  flex-shrink:0; color:var(--text2);
+}
+.opt-btn.correct {
+  border-color:var(--green); background:rgba(0,230,118,0.12);
+}
+.opt-btn.correct .opt-label {
+  background:var(--green); color:#0d1b2a;
+}
+.opt-btn.wrong {
+  border-color:var(--red); background:rgba(255,82,82,0.1);
+}
+.opt-btn.wrong .opt-label {
+  background:var(--red); color:#fff;
+}
+.opt-btn.disabled { opacity:0.5; cursor:default; }
+
+.explanation-box {
+  background:var(--surface2); border-radius:12px;
+  border-left:3px solid var(--accent);
+  padding:12px 14px; margin-bottom:20px;
+  font-size:13px; color:var(--text2); line-height:1.5;
+  display:none;
+}
+.explanation-box.show { display:block; }
+
+.next-btn {
+  width:100%; padding:16px;
+  border:none; border-radius:var(--radius);
+  background:linear-gradient(135deg, var(--accent), #1a9fff);
+  color:#0d1b2a; font-family:'Syne',sans-serif;
+  font-size:15px; font-weight:700;
+  cursor:pointer; display:none;
+  box-shadow: 0 4px 16px rgba(0,229,255,0.3);
+  transition: transform .15s;
+}
+.next-btn:active { transform:scale(0.97); }
+.next-btn.show { display:block; }
+
+/* ── RESULT ── */
+#result {
+  align-items:center; justify-content:center;
+  text-align:center; gap:0; padding:30px 20px;
+}
+.result-ring {
+  width:130px; height:130px; border-radius:50%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  margin-bottom:20px; position:relative;
+}
+.result-ring svg {
+  position:absolute; top:0; left:0;
+  width:130px; height:130px; transform:rotate(-90deg);
+}
+.result-ring circle {
+  fill:none; stroke-width:8;
+  cx:65; cy:65; r:58;
+}
+.result-ring .track { stroke:rgba(255,255,255,0.07); }
+.result-ring .fill {
+  stroke:var(--accent);
+  stroke-linecap:round;
+  transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1);
+  filter: drop-shadow(0 0 8px rgba(0,229,255,0.5));
+}
+.result-pct {
+  font-family:'Syne',sans-serif; font-size:30px; font-weight:800;
+  color:var(--accent); position:relative; z-index:1;
+}
+.result-lbl { font-size:11px; color:var(--text2); position:relative; z-index:1; }
+.result-grade {
+  font-family:'Syne',sans-serif; font-size:26px; font-weight:800;
+  margin-bottom:6px;
+}
+.result-msg { font-size:14px; color:var(--text2); margin-bottom:28px; }
+
+.score-cards {
+  display:flex; gap:12px; width:100%; max-width:320px; margin-bottom:28px;
+}
+.score-card {
+  flex:1; background:var(--surface);
+  border:1px solid var(--border); border-radius:12px;
+  padding:14px 8px; text-align:center;
+}
+.score-card-num {
+  font-family:'Syne',sans-serif; font-size:22px; font-weight:800;
+}
+.score-card-lbl { font-size:11px; color:var(--text2); margin-top:2px; }
+.green { color:var(--green); }
+.red { color:var(--red); }
+.orange { color:var(--accent2); }
+
+.review-list {
+  width:100%; max-width:360px;
+  max-height:280px; overflow-y:auto;
+  margin-bottom:24px;
+  border-radius:12px;
+  border:1px solid var(--border);
+}
+.review-item {
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  text-align:left; font-size:12px;
+  display:flex; gap:10px; align-items:flex-start;
+}
+.review-item:last-child { border-bottom:none; }
+.review-icon { font-size:14px; flex-shrink:0; margin-top:1px; }
+.review-q { color:var(--text2); line-height:1.4; }
+.review-q span { color:var(--text); font-weight:500; }
+
+/* SPLASH */
+#splash {
+  position:fixed; inset:0; z-index:100;
+  background:var(--bg); display:flex;
+  align-items:center; justify-content:center;
+  flex-direction:column; gap:16px;
+  transition: opacity 0.5s;
+}
+#splash.hide { opacity:0; pointer-events:none; }
+.splash-icon { font-size:60px; animation: bounce 0.8s ease infinite alternate; }
+@keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-12px)} }
+.splash-text {
+  font-family:'Syne',sans-serif; font-size:22px;
+  font-weight:800; color:var(--accent);
+}
+.splash-bar {
+  width:160px; height:3px; background:rgba(255,255,255,0.1);
+  border-radius:2px; overflow:hidden;
+}
+.splash-bar-fill {
+  height:100%; background:var(--accent); border-radius:2px;
+  animation: load 1.5s ease forwards;
+}
+@keyframes load { from{width:0} to{width:100%} }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:30px; padding:10px 20px;
+  font-size:13px; color:var(--text);
+  box-shadow:var(--shadow); z-index:200;
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--surface2); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-icon">🧬</div>
+  <div class="splash-text">Forensic MCQ</div>
+  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div class="logo-ring">🧬</div>
+  <div class="home-title">Forensic<br/>MCQ 2026</div>
+  <div class="home-sub">Bangladesh Medical · Practice Quiz</div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-num">62</div>
+      <div class="stat-lbl">Questions</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">15</div>
+      <div class="stat-lbl">Topics</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="best-score-display">—</div>
+      <div class="stat-lbl">Best Score</div>
+    </div>
+  </div>
+
+  <div class="section-label">Select Mode</div>
+  <button class="btn-primary" onclick="startQuiz('all')">▶ Full Quiz (All 62 Q)</button>
+  <button class="btn-primary" style="background:linear-gradient(135deg,var(--accent2),#ff9a5c);box-shadow:0 4px 20px rgba(255,107,53,0.3)" onclick="startQuiz('random20')">🎲 Random 20 Questions</button>
+  <button class="btn-sec" onclick="startQuiz('practice')">📖 Practice Mode (No Timer)</button>
+
+  <div class="section-label" style="margin-top:8px">Select Topic</div>
+  <div class="topic-grid" id="topic-grid"></div>
+  <button class="btn-primary" id="topic-start-btn" style="display:none;margin-top:4px;background:linear-gradient(135deg,#7b9fff,var(--accent))" onclick="startTopicQuiz()">Start Topic Quiz</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <div class="quiz-top">
+      <div class="quiz-topic-tag" id="q-topic-tag">Forensic Medicine</div>
+      <div class="timer-wrap">
+        <div class="timer-dot" id="timer-dot"></div>
+        <div class="timer-num" id="timer-display">30</div>
+      </div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <div class="q-counter" id="q-counter">Question 1 of 62</div>
+  </div>
+
+  <div class="quiz-body">
+    <div class="q-number" id="q-number">Q1</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options-list" id="options-list"></div>
+    <div class="explanation-box" id="explanation-box"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="screen">
+  <div class="result-ring">
+    <svg viewBox="0 0 130 130">
+      <circle class="track" cx="65" cy="65" r="58"/>
+      <circle class="fill" id="result-circle" cx="65" cy="65" r="58"
+        stroke-dasharray="364.4" stroke-dashoffset="364.4"/>
+    </svg>
+    <div class="result-pct" id="result-pct">0%</div>
+    <div class="result-lbl">Score</div>
+  </div>
+
+  <div class="result-grade" id="result-grade"></div>
+  <div class="result-msg" id="result-msg"></div>
+
+  <div class="score-cards">
+    <div class="score-card">
+      <div class="score-card-num green" id="res-correct">0</div>
+      <div class="score-card-lbl">Correct</div>
+    </div>
+    <div class="score-card">
+      <div class="score-card-num red" id="res-wrong">0</div>
+      <div class="score-card-lbl">Wrong</div>
+    </div>
+    <div class="score-card">
+      <div class="score-card-num orange" id="res-time">0s</div>
+      <div class="score-card-lbl">Avg Time</div>
+    </div>
+  </div>
+
+  <div class="review-list" id="review-list"></div>
+
+  <button class="btn-primary" onclick="showScreen('home')">🏠 Back to Home</button>
+  <button class="btn-sec" onclick="retryQuiz()">🔁 Retry Same Quiz</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  QUESTION BANK
+// ═══════════════════════════════════════════════════
+const QUESTIONS = [
+  // Topic 1: Dactylography & Odontology
+  {id:1,topic:"Dactylography & Odontology",q:"Forensic dactylography deals with:",opts:["Teeth identification","Fingerprint system","Blood group analysis","DNA profiling"],ans:1},
+  {id:2,topic:"Dactylography & Odontology",q:"Forensic odontology is the branch of forensic medicine that deals with:",opts:["Fingerprint identification","Toxicology","Science of dentistry as it relates to law","Wound analysis"],ans:2},
+  // Topic 2: Courts
+  {id:3,topic:"Courts",q:"Which court is the highest adjudicating body?",opts:["High Court","Session Court","Supreme Court","Magistrate Court"],ans:2},
+  {id:4,topic:"Courts",q:"Death sentence passed by Session Judge must be approved by:",opts:["Supreme Court","High Court","Magistrate Court","Police Court"],ans:1},
+  {id:5,topic:"Courts",q:"High Court can pass which of the following sentences?",opts:["Only fine","Only imprisonment","Death sentence, life imprisonment, solitary confinement","None of the above"],ans:2},
+  // Topic 3: Inquest
+  {id:6,topic:"Types of Inquest",q:"How many types of inquest are there?",opts:["2","3","4","5"],ans:1},
+  {id:7,topic:"Types of Inquest",q:"Which of the following is NOT a type of inquest?",opts:["Police inquest","Magistrate's inquest","Coroner's inquest","Doctor's inquest"],ans:3},
+  // Topic 4: Putrefaction
+  {id:8,topic:"Putrefaction",q:"The first external sign of putrefaction is seen over:",opts:["Face","Chest","Abdominal skin over caecum region","Back"],ans:2},
+  {id:9,topic:"Putrefaction",q:"Greenish discolouration in putrefaction is due to conversion of Hb into:",opts:["Methaemoglobin","Sulphmethaemoglobin","Carboxyhaemoglobin","Oxyhaemoglobin"],ans:1},
+  {id:10,topic:"Putrefaction",q:"Green colour of putrefaction appears in summer after:",opts:["6-12 hours","12-18 hours","24-48 hours","3-4 days"],ans:1},
+  {id:11,topic:"Putrefaction",q:"Gases of putrefaction include all EXCEPT:",opts:["Sulphuretted hydrogen","Marsh gas","Ammonia","Oxygen"],ans:3},
+  {id:12,topic:"Putrefaction",q:"Colliquative putrefaction begins after death at:",opts:["1-2 days","2-5 days","5-10 days or more","15-20 days"],ans:2},
+  // Topic 5: Asphyxia & Hanging
+  {id:13,topic:"Asphyxia & Hanging",q:"Which is NOT a type of violent asphyxial death?",opts:["Strangulation","Drowning","Choking","Poisoning"],ans:3},
+  {id:14,topic:"Asphyxia & Hanging",q:"The most common mode of death in hanging is:",opts:["Cerebral ischaemia","Asphyxia","Reflex vagal inhibition","Apoplexy"],ans:1},
+  {id:15,topic:"Asphyxia & Hanging",q:"In judicial hanging, fracture/dislocation of cervical vertebrae occurs at:",opts:["1st and 2nd","2nd and 3rd","3rd and 4th","4th and 5th"],ans:1},
+  {id:16,topic:"Asphyxia & Hanging",q:"All are modes of death in hanging EXCEPT:",opts:["Asphyxia","Apoplexy","Reflex vagal inhibition","Anaphylaxis"],ans:3},
+  // Topic 6: Complications of Hanging
+  {id:17,topic:"Complications of Hanging",q:"All are complications of hanging EXCEPT:",opts:["Hemiplegia","Amnesia","Hypoxic encephalopathy","Hyperglycaemia"],ans:3},
+  {id:18,topic:"Complications of Hanging",q:"Which of the following is a complication of hanging?",opts:["Retropharyngeal abscess","Myocardial infarction","Pulmonary fibrosis","Hepatitis"],ans:0},
+  // Topic 7: Drowning
+  {id:19,topic:"Drowning & Diatoms",q:"How many types of drowning are there?",opts:["2","3","4","5"],ans:2},
+  {id:20,topic:"Drowning & Diatoms",q:"Dry drowning accounts for what percentage of drowning cases?",opts:["5-10%","10-20%","20-30%","30-40%"],ans:1},
+  {id:21,topic:"Drowning & Diatoms",q:"In dry drowning, death occurs due to:",opts:["Water entering lungs","Laryngeal spasm","Cardiac arrest","Pulmonary oedema"],ans:1},
+  {id:22,topic:"Drowning & Diatoms",q:"The surest/most characteristic sign of drowning is:",opts:["Diatoms in lung","Cutis anserina (goose skin)","Frothy fluid from mouth","Washerwoman's hands"],ans:1},
+  {id:23,topic:"Drowning & Diatoms",q:"Finding of diatoms in which tissue is positive sign of drowning?",opts:["Brain tissue","Liver tissue","Lung tissue","Kidney tissue"],ans:2},
+  {id:24,topic:"Drowning & Diatoms",q:"Diatoms belong to class:",opts:["Chlorophycae","Bacillariophycae","Cyanophycae","Rhodophycae"],ans:1},
+  // Topic 8: Wounds
+  {id:25,topic:"Wounds",q:"Battery is defined as:",opts:["Threat of force","Actual application of force to the body","Verbal abuse","Attempted assault"],ans:1},
+  {id:26,topic:"Wounds",q:"Which is NOT a mechanical wound?",opts:["Abrasion","Laceration","Chemical burn","Stab wound"],ans:2},
+  {id:27,topic:"Wounds",q:"Types of abrasions are:",opts:["2","3","4","5"],ans:2},
+  {id:28,topic:"Wounds",q:"The most common type of abrasion seen in road accidents is:",opts:["Scratch","Graze","Impact abrasion","Pressure abrasion"],ans:1},
+  {id:29,topic:"Wounds",q:"Best example of pressure abrasion is:",opts:["Road accident","Ligature mark in hanging/strangulation","Bite mark","Fingernail mark"],ans:1},
+  {id:30,topic:"Wounds",q:"Tentative/hesitating cuts in incised wounds show:",opts:["Single deep cut","Two or more superficial parallel cuts at commencement","Irregular margins","Multiple stab wounds"],ans:1},
+  {id:31,topic:"Wounds",q:"Scab formation in abrasion occurs at:",opts:["6-12 hours","12-24 hours","2-3 days","4-7 days"],ans:1},
+  {id:32,topic:"Wounds",q:"Epithelium covers the defect in abrasion at:",opts:["1-2 days","2-3 days","4-7 days","After 7 days"],ans:2},
+  {id:33,topic:"Wounds",q:"Feature NOT seen in lacerated wounds:",opts:["Irregular margins","Less haemorrhage","Irregular scar formation","Clean cut edges"],ans:3},
+  // Topic 9: Firearms
+  {id:34,topic:"Firearms",q:"Firearms are principally of how many types?",opts:["1","2","3","4"],ans:1},
+  {id:35,topic:"Firearms",q:"Smooth bored firearm example is:",opts:["Revolver","Rifle","Shot gun","Automatic pistol"],ans:2},
+  {id:36,topic:"Firearms",q:"The muzzle of a firearm is:",opts:["Posterior part of barrel","Open end of barrel through which projectile is discharged","Short cone connecting chamber to barrel","Part that holds cartridge"],ans:1},
+  // Topic 10: Brain Injuries
+  {id:37,topic:"Brain Injuries",q:"Which is NOT an intracranial haemorrhage?",opts:["Extradural","Subdural","Subarachnoid","Intramedullary"],ans:3},
+  // Topic 11: Burns
+  {id:38,topic:"Burns & Scalds",q:"Dupuytren classification of burns has how many degrees?",opts:["4","5","6","7"],ans:2},
+  {id:39,topic:"Burns & Scalds",q:"In Dupuytren's classification, 2nd degree burn means:",opts:["Reddening of skin","Blistering","Skin partly destroyed","Subcutaneous tissues burnt"],ans:1},
+  {id:40,topic:"Burns & Scalds",q:"Head accounts for what percentage in Rule of Nine?",opts:["18%","9%","1%","4.5%"],ans:1},
+  {id:41,topic:"Burns & Scalds",q:"External genitalia in Rule of Nine accounts for:",opts:["9%","4.5%","1%","2%"],ans:2},
+  {id:42,topic:"Burns & Scalds",q:"Earliest cause of death in burns (within 24 hours) is:",opts:["Sepsis","Toxaemia","Shock","Exhaustion"],ans:2},
+  {id:43,topic:"Burns & Scalds",q:"Open method of burn treatment is indicated in:",opts:["Deep burn","Infected burn","Superficial burn and burn in head/face","Full thickness burn"],ans:2},
+  {id:44,topic:"Burns & Scalds",q:"Closed method – innermost dressing layer uses:",opts:["Cotton gauze","Absorbant wool","Antiseptic (silver sulphadiazine etc.)","Dry dressing"],ans:2},
+  {id:45,topic:"Burns & Scalds",q:"In burns, vesicles are seen:",opts:["Over entire burnt area","At the margin of burnt area","Absent","Only on face"],ans:1},
+  {id:46,topic:"Burns & Scalds",q:"Medicolegally, burns are usually:",opts:["Homicidal","Accidental","Suicidal or accidental, rarely homicidal","Always suicidal"],ans:2},
+  {id:47,topic:"Burns & Scalds",q:"Scalds are caused by:",opts:["Dry heat","Flame","Moist heat/steam/liquid at boiling point","Electricity"],ans:2},
+  // Topic 12: Lightning
+  {id:48,topic:"Lightning",q:"The electric current in lightning is:",opts:["Alternating, 20,000 amperes","Direct, ~20,000 amperes and 100-1000 million volts","Alternating, 1000 amperes","Direct, 100 amperes"],ans:1},
+  {id:49,topic:"Lightning",q:"Arborescent marks in lightning are due to:",opts:["Burns from heat","Dilatation/rupture of smaller blood vessels","Muscle contraction","Skin charring"],ans:1},
+  // Topic 13: Autopsy
+  {id:50,topic:"Autopsy & Exhumation",q:"According to Simpson, autopsies are of how many types?",opts:["1","2","3","4"],ans:1},
+  {id:51,topic:"Autopsy & Exhumation",q:"Medico-legal autopsy is performed to:",opts:["Confirm diagnosis for academic interest","Discover facts in unnatural/suspicious death","Teach students","Research purposes only"],ans:1},
+  {id:52,topic:"Autopsy & Exhumation",q:"Time limit for exhumation in Bangladesh and England is:",opts:["10 years","20 years","30 years","No time limit"],ans:3},
+  {id:53,topic:"Autopsy & Exhumation",q:"In exhumation, special significance in arsenic poisoning – sample used:",opts:["Liver","Stomach","Scalp hair and ends of bone like femur","Intestine"],ans:2},
+  // Topic 14: Virginity & Infanticide
+  {id:54,topic:"Virginity & Infanticide",q:"Medico-legal importance of virginity arises in all EXCEPT:",opts:["Nullity of marriage","Divorce","Defamation","Theft"],ans:3},
+  {id:55,topic:"Virginity & Infanticide",q:"Types of hymen are usually:",opts:["4","5","6","8"],ans:2},
+  {id:56,topic:"Virginity & Infanticide",q:"Which type of hymen has no opening?",opts:["Annular","Cribriform","Fimbriated","Imperforate"],ans:3},
+  {id:57,topic:"Virginity & Infanticide",q:"In Bangladesh, infanticide means killing of a newly born baby within:",opts:["7 days","15 days","28 days","1 year"],ans:1},
+  {id:58,topic:"Virginity & Infanticide",q:"Infanticide is legally considered as:",opts:["Manslaughter","Homicide","Accidental death","Natural death"],ans:1},
+  // Topic 15: Sexual Offences & Live/Stillborn
+  {id:59,topic:"Sexual Offences & Neonatology",q:"Hydrostatic test in live-born child shows:",opts:["Lung sinks in water","Lung floats in water","No change","Lung partially floats"],ans:1},
+  {id:60,topic:"Sexual Offences & Neonatology",q:"Ratio of weight of lung to body in live-born child (Static test) is:",opts:["1:70","1:35","1:50","1:20"],ans:1},
+  {id:61,topic:"Sexual Offences & Neonatology",q:"Which is an unnatural sexual offence?",opts:["Rape","Incest","Sodomy","Adultery"],ans:2},
+  {id:62,topic:"Sexual Offences & Neonatology",q:"Age of consent for sexual intercourse in Bangladesh is:",opts:["14 years","16 years","18 years","21 years"],ans:1},
+];
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let state = {
+  questions: [],
+  current: 0,
+  score: 0,
+  wrong: 0,
+  answered: false,
+  timerInterval: null,
+  timeLeft: 30,
+  timeTaken: 0,
+  totalTimeTaken: 0,
+  mode: 'all',
+  selectedTopic: null,
+  lastQuestions: [],
+};
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(() => document.getElementById('splash').remove(), 500);
+  }, 1800);
+  buildTopicGrid();
+  loadBestScore();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+});
+
+function loadBestScore() {
+  const best = localStorage.getItem('forensic_best');
+  if (best) document.getElementById('best-score-display').textContent = best + '%';
+}
+
+// ═══════════════════════════════════════════════════
+//  TOPIC GRID
+// ═══════════════════════════════════════════════════
+function buildTopicGrid() {
+  const topics = [...new Set(QUESTIONS.map(q=>q.topic))];
+  const grid = document.getElementById('topic-grid');
+  grid.innerHTML = '';
+  topics.forEach(t => {
+    const chip = document.createElement('div');
+    chip.className = 'topic-chip';
+    chip.textContent = t;
+    chip.onclick = () => {
+      document.querySelectorAll('.topic-chip').forEach(c=>c.classList.remove('selected'));
+      chip.classList.add('selected');
+      state.selectedTopic = t;
+      document.getElementById('topic-start-btn').style.display = 'block';
+    };
+    grid.appendChild(chip);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  START QUIZ
+// ═══════════════════════════════════════════════════
+function startQuiz(mode) {
+  state.mode = mode;
+  let qs = [...QUESTIONS];
+  if (mode === 'random20') {
+    qs = qs.sort(()=>Math.random()-0.5).slice(0,20);
+  }
+  state.questions = qs;
+  state.lastQuestions = qs;
+  initQuiz();
+}
+
+function startTopicQuiz() {
+  if (!state.selectedTopic) return;
+  state.mode = 'topic';
+  const qs = QUESTIONS.filter(q=>q.topic===state.selectedTopic);
+  state.questions = qs;
+  state.lastQuestions = qs;
+  initQuiz();
+}
+
+function initQuiz() {
+  state.current = 0;
+  state.score = 0;
+  state.wrong = 0;
+  state.totalTimeTaken = 0;
+  state.answered = false;
+  showScreen('quiz');
+  renderQuestion();
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDER QUESTION
+// ═══════════════════════════════════════════════════
+function renderQuestion() {
+  const q = state.questions[state.current];
+  const total = state.questions.length;
+  const pct = ((state.current) / total) * 100;
+
+  document.getElementById('q-topic-tag').textContent = q.topic;
+  document.getElementById('q-number').textContent = `Q${state.current + 1}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-counter').textContent = `Question ${state.current + 1} of ${total}`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('explanation-box').classList.remove('show');
+  document.getElementById('next-btn').classList.remove('show');
+
+  const ol = document.getElementById('options-list');
+  ol.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-label">${labels[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => handleAnswer(i, btn);
+    ol.appendChild(btn);
+  });
+
+  state.answered = false;
+  if (state.mode !== 'practice') startTimer();
+  else {
+    clearInterval(state.timerInterval);
+    document.getElementById('timer-display').textContent = '∞';
+    document.getElementById('timer-dot').classList.remove('warn');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════════════
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timeLeft = 30;
+  state.timeTaken = 0;
+  const display = document.getElementById('timer-display');
+  const dot = document.getElementById('timer-dot');
+  display.textContent = state.timeLeft;
+  display.classList.remove('warn');
+  dot.classList.remove('warn');
+
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    state.timeTaken++;
+    display.textContent = state.timeLeft;
+    if (state.timeLeft <= 10) {
+      display.classList.add('warn');
+      dot.classList.add('warn');
+    }
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      if (!state.answered) timeUp();
+    }
+  }, 1000);
+}
+
+function timeUp() {
+  state.answered = true;
+  state.wrong++;
+  state.totalTimeTaken += 30;
+  showToast("⏰ Time's up!");
+  revealAnswer(-1);
+}
+
+// ═══════════════════════════════════════════════════
+//  ANSWER
+// ═══════════════════════════════════════════════════
+function handleAnswer(idx, btn) {
+  if (state.answered) return;
+  state.answered = true;
+  clearInterval(state.timerInterval);
+  state.totalTimeTaken += (30 - state.timeLeft);
+
+  const q = state.questions[state.current];
+  revealAnswer(idx);
+  if (idx === q.ans) {
+    state.score++;
+    showToast('✅ Correct!');
+  } else {
+    state.wrong++;
+    showToast('❌ Wrong!');
+  }
+}
+
+function revealAnswer(chosen) {
+  const q = state.questions[state.current];
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === chosen && chosen !== q.ans) btn.classList.add('wrong');
+    else btn.classList.add('disabled');
+  });
+  document.getElementById('next-btn').classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════
+//  NEXT
+// ═══════════════════════════════════════════════════
+function nextQuestion() {
+  state.current++;
+  if (state.current >= state.questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  RESULT
+// ═══════════════════════════════════════════════════
+function showResult() {
+  clearInterval(state.timerInterval);
+  showScreen('result');
+
+  const total = state.questions.length;
+  const pct = Math.round((state.score / total) * 100);
+  const avgTime = Math.round(state.totalTimeTaken / total);
+
+  // Save best
+  const prev = parseInt(localStorage.getItem('forensic_best') || '0');
+  if (pct > prev) {
+    localStorage.setItem('forensic_best', pct);
+    document.getElementById('best-score-display').textContent = pct + '%';
+  }
+
+  document.getElementById('result-pct').textContent = pct + '%';
+  document.getElementById('res-correct').textContent = state.score;
+  document.getElementById('res-wrong').textContent = state.wrong;
+  document.getElementById('res-time').textContent = avgTime + 's';
+
+  // Grade
+  let grade, msg, color;
+  if (pct >= 80) { grade='Excellent! 🏆'; msg='Outstanding performance!'; color='var(--green)'; }
+  else if (pct >= 60) { grade='Good 👍'; msg='Keep practicing to improve.'; color='var(--accent)'; }
+  else if (pct >= 40) { grade='Average 📚'; msg='Review the topics carefully.'; color='var(--accent2)'; }
+  else { grade='Need Work 💪'; msg='Study harder — you can do it!'; color='var(--red)'; }
+
+  const gradeEl = document.getElementById('result-grade');
+  gradeEl.textContent = grade;
+  gradeEl.style.color = color;
+  document.getElementById('result-msg').textContent = msg;
+
+  // Animate circle
+  const circumference = 364.4;
+  const offset = circumference - (pct / 100) * circumference;
+  setTimeout(() => {
+    document.getElementById('result-circle').style.strokeDashoffset = offset;
+    document.getElementById('result-circle').style.stroke = color;
+  }, 300);
+
+  // Review list
+  const rl = document.getElementById('review-list');
+  rl.innerHTML = '';
+  state.questions.forEach((q, i) => {
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    const correct = q.ans;
+    item.innerHTML = `
+      <div class="review-icon">${i < state.score ? '✅' : '❌'}</div>
+      <div class="review-q"><span>Q${i+1}:</span> ${q.q.substring(0,60)}...<br/>
+      <span style="color:var(--green)">✓ ${q.opts[correct]}</span></div>`;
+    rl.appendChild(item);
+  });
+}
+
+function retryQuiz() {
+  state.questions = state.lastQuestions;
+  initQuiz();
+}
+
+// ═══════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id !== 'quiz') clearInterval(state.timerInterval);
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+</script>
+</body>
+</html>
