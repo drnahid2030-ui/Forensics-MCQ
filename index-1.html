@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>DHMS এডমিশন মাস্টার</title>
+<meta name="theme-color" content="#0F4C3A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF6EC;
+    --paper-deep:#F1EADA;
+    --ink:#211D16;
+    --ink-muted:#6E6656;
+    --green:#0F4C3A;
+    --green-deep:#0A362A;
+    --maroon:#8E2A2A;
+    --gold:#B8862E;
+    --line:#DDD2B8;
+    --correct:#1D7A4C;
+    --correct-bg:#E4F3E9;
+    --wrong:#A02D2D;
+    --wrong-bg:#FBE8E6;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Hind Siliguri',sans-serif;
+    min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
+  }
+  h1,h2,h3,.serif{font-family:'Noto Serif Bengali',serif;}
+  #app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;}
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    background:var(--green);
+    color:var(--paper);
+    padding:22px 20px 18px;
+    border-bottom:3px solid var(--gold);
+  }
+  .masthead .eyebrow{
+    font-size:12.5px;
+    letter-spacing:.03em;
+    color:#CFE3D9;
+    margin-bottom:4px;
+  }
+  .masthead h1{
+    margin:0;
+    font-size:26px;
+    font-weight:700;
+    line-height:1.25;
+  }
+  .masthead .sub{
+    margin-top:6px;
+    font-size:13.5px;
+    color:#CFE3D9;
+  }
+
+  /* ---------- Home screen ---------- */
+  .content{padding:18px 18px 90px;flex:1;}
+  .section-label{
+    font-size:14px;
+    color:var(--ink-muted);
+    margin:22px 2px 10px;
+  }
+  .section-label:first-child{margin-top:4px;}
+
+  .shelf{display:flex;flex-direction:column;gap:10px;}
+  .spine{
+    background:var(--paper-deep);
+    border:1px solid var(--line);
+    border-left:7px solid var(--green);
+    border-radius:6px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .spine:active{transform:scale(.985);}
+  .spine.disabled{opacity:.45;pointer-events:none;}
+  .spine .name{font-family:'Noto Serif Bengali',serif;font-size:17px;font-weight:600;}
+  .spine .meta{font-size:12.5px;color:var(--ink-muted);margin-top:3px;}
+  .spine .count{
+    font-size:14px;font-weight:700;color:var(--green);
+    background:#fff;border:1px solid var(--line);
+    border-radius:20px;padding:4px 12px;white-space:nowrap;
+  }
+  .spine.review{border-left-color:var(--maroon);}
+  .spine.review .count{color:var(--maroon);}
+
+  .stat-row{display:flex;gap:10px;margin-top:2px;}
+  .stat-box{
+    flex:1;background:#fff;border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;text-align:center;
+  }
+  .stat-box .num{font-family:'Noto Serif Bengali',serif;font-size:20px;font-weight:700;color:var(--green);}
+  .stat-box .lbl{font-size:11.5px;color:var(--ink-muted);margin-top:2px;}
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-header{
+    background:var(--green-deep);color:var(--paper);
+    padding:14px 18px 12px;
+  }
+  .quiz-top-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;}
+  .quiz-top-row .back{color:#CFE3D9;cursor:pointer;font-size:14px;}
+  .quiz-top-row .score{font-weight:600;color:#F1D28A;}
+  .progress-track{
+    height:5px;background:rgba(255,255,255,.18);
+    border-radius:3px;margin-top:10px;overflow:hidden;
+  }
+  .progress-fill{height:100%;background:var(--gold);width:0%;transition:width .25s ease;}
+
+  .qwrap{padding:22px 18px 110px;flex:1;}
+  .qcount{font-size:12.5px;color:var(--ink-muted);margin-bottom:8px;}
+  .qtext{
+    font-family:'Noto Serif Bengali',serif;
+    font-size:19px;line-height:1.55;font-weight:600;
+    margin-bottom:20px;
+  }
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .opt{
+    display:flex;align-items:center;gap:12px;
+    background:#fff;border:1.5px solid var(--line);
+    border-radius:9px;padding:12px 14px;
+    cursor:pointer;font-size:15.5px;line-height:1.4;
+    transition:background .12s, border-color .12s;
+  }
+  .opt .bullet{
+    flex:0 0 30px;height:30px;border-radius:50%;
+    border:1.5px solid var(--ink-muted);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Noto Serif Bengali',serif;font-weight:700;font-size:14px;
+    color:var(--ink-muted);
+  }
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct);}
+  .opt.correct .bullet{background:var(--correct);border-color:var(--correct);color:#fff;}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong);}
+  .opt.wrong .bullet{background:var(--wrong);border-color:var(--wrong);color:#fff;}
+  .opt.locked{cursor:default;}
+  .opt.dim{opacity:.55;}
+
+  .next-bar{
+    position:fixed;left:0;right:0;bottom:0;
+    max-width:520px;margin:0 auto;
+    background:var(--paper);border-top:1px solid var(--line);
+    padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+    display:none;
+  }
+  .next-bar.show{display:block;}
+  .btn{
+    display:block;width:100%;text-align:center;
+    background:var(--green);color:#fff;border:none;
+    font-family:'Hind Siliguri',sans-serif;font-size:16px;font-weight:600;
+    padding:13px;border-radius:8px;cursor:pointer;
+  }
+  .btn:active{background:var(--green-deep);}
+  .btn.secondary{background:#fff;color:var(--green);border:1.5px solid var(--green);}
+  .btn.maroon{background:var(--maroon);}
+
+  /* ---------- Result screen ---------- */
+  .result-hero{
+    background:var(--green);color:var(--paper);
+    padding:34px 20px 26px;text-align:center;
+    border-bottom:3px solid var(--gold);
+  }
+  .result-hero .big{font-family:'Noto Serif Bengali',serif;font-size:44px;font-weight:700;}
+  .result-hero .cap{font-size:14px;color:#CFE3D9;margin-top:4px;}
+  .review-list{display:flex;flex-direction:column;gap:12px;margin-top:6px;}
+  .review-item{
+    background:#fff;border:1px solid var(--line);border-radius:9px;padding:13px 15px;
+  }
+  .review-item .rq{font-family:'Noto Serif Bengali',serif;font-weight:600;font-size:15.5px;margin-bottom:8px;}
+  .review-item .ra{font-size:13.5px;margin:2px 0;}
+  .review-item .ra.correct{color:var(--correct);font-weight:600;}
+  .review-item .ra.wrong{color:var(--wrong);font-weight:600;text-decoration:line-through;}
+  .empty-note{
+    text-align:center;color:var(--ink-muted);font-size:14px;
+    padding:24px 10px;
+  }
+  .btn-col{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
+
+  .footer-credit{
+    text-align:center;font-size:11.5px;color:var(--ink-muted);
+    padding:10px 18px 4px;
+  }
+  ::selection{background:#F1D28A;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="questions.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var SUBJECTS = [
+    {key:"bangla",  name:"বাংলা",         meta:"সাহিত্য, ব্যাকরণ"},
+    {key:"english", name:"English",       meta:"Grammar, Vocabulary"},
+    {key:"gonit",   name:"গণিত",          meta:"পাটিগণিত, বীজগণিত"},
+    {key:"biggan",  name:"বিজ্ঞান",        meta:"সাধারণ বিজ্ঞান"},
+    {key:"gk",      name:"সাধারণ জ্ঞান",   meta:"বাংলাদেশ ও বিশ্ব"}
+  ];
+
+  var STORE_KEY = "dhms_admission_master_v1";
+  var QUESTIONS = window.QUESTIONS || [];
+
+  function loadStore(){
+    try{
+      var raw = localStorage.getItem(STORE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return {best:{}, wrongIds:[], attempted:0, correct:0};
+  }
+  function saveStore(s){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){}
+  }
+  var store = loadStore();
+
+  function byId(id){ return document.getElementById(id); }
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+  function countFor(key){
+    if(key==="__review__") return store.wrongIds.length;
+    return QUESTIONS.filter(function(q){return q.subject===key;}).length;
+  }
+
+  var LETTERS = ["ক","খ","গ","ঘ"];
+  var root = byId("app");
+
+  var state = null;
+
+  function startSession(subjectKey, label){
+    var pool;
+    if(subjectKey === "__review__"){
+      var idSet = {};
+      store.wrongIds.forEach(function(id){ idSet[id]=true; });
+      pool = QUESTIONS.filter(function(q){ return idSet[q.id]; });
+    } else {
+      pool = QUESTIONS.filter(function(q){ return q.subject === subjectKey; });
+    }
+    pool = shuffle(pool);
+    // per-question option order shuffle, precomputed
+    var items = pool.map(function(q){
+      var order = shuffle([0,1,2,3]);
+      return {q:q, order:order, answered:false, picked:null};
+    });
+    state = {
+      subjectKey: subjectKey,
+      label: label,
+      items: items,
+      idx: 0,
+      score: 0,
+      wrongThisRound: []
+    };
+    renderQuiz();
+  }
+
+  function optionLetterIndex(q, displayPos, order){
+    // order[displayPos] = original option index (0=A,1=B,2=C,3=D)
+    return order[displayPos];
+  }
+
+  function renderHome(){
+    state = null;
+    var html = "";
+    html += '<div class="masthead">';
+    html += '<div class="eyebrow">সিমিলিয়া প্রকাশনী · ভর্তি প্রস্তুতি সহায়িকা</div>';
+    html += '<h1>DHMS এডমিশন মাস্টার</h1>';
+    html += '<div class="sub">সোসিওপ্যাথিক DHMS ভর্তি পরীক্ষার জন্য বিষয়ভিত্তিক অনুশীলন</div>';
+    html += '</div>';
+    html += '<div class="content">';
+
+    html += '<div class="stat-row">';
+    html += '<div class="stat-box"><div class="num">'+store.attempted+'</div><div class="lbl">মোট চেষ্টা</div></div>';
+    var pct = store.attempted ? Math.round(100*store.correct/store.attempted) : 0;
+    html += '<div class="stat-box"><div class="num">'+pct+'%</div><div class="lbl">সঠিক হার</div></div>';
+    html += '<div class="stat-box"><div class="num">'+store.wrongIds.length+'</div><div class="lbl">ভুল প্রশ্ন জমা</div></div>';
+    html += '</div>';
+
+    html += '<div class="section-label">বিষয় বেছে নিন</div>';
+    html += '<div class="shelf">';
+    SUBJECTS.forEach(function(s){
+      var n = countFor(s.key);
+      var best = store.best[s.key];
+      html += '<div class="spine'+(n===0?' disabled':'')+'" data-subject="'+s.key+'" data-label="'+s.name+'">';
+      html += '<div><div class="name">'+s.name+'</div><div class="meta">'+s.meta+(best!==undefined?' · সেরা স্কোর '+best+'%':'')+'</div></div>';
+      html += '<div class="count">'+n+' টি</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    var reviewCount = store.wrongIds.length;
+    html += '<div class="section-label">পুনরায় অনুশীলন</div>';
+    html += '<div class="shelf">';
+    html += '<div class="spine review'+(reviewCount===0?' disabled':'')+'" data-subject="__review__" data-label="ভুল প্রশ্ন পুনরালোচনা">';
+    html += '<div><div class="name">ভুল প্রশ্নসমূহ</div><div class="meta">আগে ভুল হওয়া প্রশ্ন আবার দেখুন</div></div>';
+    html += '<div class="count">'+reviewCount+' টি</div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="footer-credit">DHMS এডমিশন মাস্টার · সিমিলিয়া পাবলিকেশন্স থেকে ডিজিটাইজড</div>';
+    html += '</div>';
+    root.innerHTML = html;
+
+    var spines = root.querySelectorAll(".spine:not(.disabled)");
+    spines.forEach(function(el){
+      el.addEventListener("click", function(){
+        startSession(el.getAttribute("data-subject"), el.getAttribute("data-label"));
+      });
+    });
+  }
+
+  function currentItem(){ return state.items[state.idx]; }
+
+  function renderQuiz(){
+    var item = currentItem();
+    var q = item.q;
+    var total = state.items.length;
+    var pct = Math.round(100*state.idx/total);
+
+    var html = "";
+    html += '<div class="quiz-header">';
+    html += '<div class="quiz-top-row"><span class="back" id="backBtn">← বিষয় তালিকা</span><span class="score">স্কোর: '+state.score+'/'+state.idx+'</span></div>';
+    html += '<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div>';
+    html += '</div>';
+
+    html += '<div class="qwrap">';
+    html += '<div class="qcount">'+state.label+' · প্রশ্ন '+(state.idx+1)+' / '+total+'</div>';
+    html += '<div class="qtext">'+escapeHtml(q.q)+'</div>';
+    html += '<div class="options">';
+    item.order.forEach(function(origIdx, pos){
+      var letter = LETTERS[pos];
+      var text = q.options[origIdx];
+      var cls = "opt";
+      if(item.answered){
+        cls += " locked";
+        var isCorrectOpt = (origIdx === q.answerIndex);
+        if(isCorrectOpt) cls += " correct";
+        else if(item.picked === origIdx) cls += " wrong";
+        else cls += " dim";
+      }
+      html += '<div class="'+cls+'" data-orig="'+origIdx+'">';
+      html += '<div class="bullet">'+letter+'</div><div>'+escapeHtml(text)+'</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="next-bar'+(item.answered?' show':'')+'" id="nextBar">';
+    if(state.idx < total-1){
+      html += '<button class="btn" id="nextBtn">পরবর্তী প্রশ্ন</button>';
+    } else {
+      html += '<button class="btn" id="nextBtn">ফলাফল দেখুন</button>';
+    }
+    html += '</div>';
+
+    root.innerHTML = html;
+
+    byId("backBtn").addEventListener("click", function(){
+      if(confirm("এই সেশন শেষ করে বিষয় তালিকায় ফিরবেন?")) renderHome();
+    });
+
+    if(!item.answered){
+      root.querySelectorAll(".opt").forEach(function(el){
+        el.addEventListener("click", function(){ pickOption(el); });
+      });
+    } else {
+      var nb = byId("nextBtn");
+      if(nb) nb.addEventListener("click", nextQuestion);
+    }
+  }
+
+  function pickOption(el){
+    var item = currentItem();
+    if(item.answered) return;
+    var origIdx = parseInt(el.getAttribute("data-orig"),10);
+    item.answered = true;
+    item.picked = origIdx;
+    var q = item.q;
+    var isCorrect = (origIdx === q.answerIndex);
+
+    store.attempted++;
+    if(isCorrect){
+      state.score++;
+      store.correct++;
+      var wi = store.wrongIds.indexOf(q.id);
+      if(wi !== -1) store.wrongIds.splice(wi,1);
+    } else {
+      state.wrongThisRound.push(q.id);
+      if(store.wrongIds.indexOf(q.id) === -1) store.wrongIds.push(q.id);
+    }
+    saveStore(store);
+    renderQuiz();
+  }
+
+  function nextQuestion(){
+    if(state.idx < state.items.length-1){
+      state.idx++;
+      renderQuiz();
+    } else {
+      finishSession();
+    }
+  }
+
+  function finishSession(){
+    var total = state.items.length;
+    var pct = total ? Math.round(100*state.score/total) : 0;
+    if(state.subjectKey !== "__review__"){
+      var prevBest = store.best[state.subjectKey];
+      if(prevBest === undefined || pct > prevBest){
+        store.best[state.subjectKey] = pct;
+      }
+    }
+    saveStore(store);
+    renderResult(pct, total);
+  }
+
+  function renderResult(pct, total){
+    var wrongItems = state.items.filter(function(it){ return it.picked !== null && it.picked !== it.q.answerIndex; });
+    var html = "";
+    html += '<div class="result-hero">';
+    html += '<div class="cap">'+state.label+' · অনুশীলন শেষ</div>';
+    html += '<div class="big">'+state.score+' / '+total+'</div>';
+    html += '<div class="cap">সঠিক উত্তর '+pct+'%</div>';
+    html += '</div>';
+    html += '<div class="content">';
+
+    html += '<div class="btn-col">';
+    html += '<button class="btn" id="retrySame">আবার একই বিষয় অনুশীলন করুন</button>';
+    html += '<button class="btn secondary" id="goHome">বিষয় তালিকায় ফিরুন</button>';
+    html += '</div>';
+
+    html += '<div class="section-label">ভুল হওয়া প্রশ্নগুলো</div>';
+    if(wrongItems.length === 0){
+      html += '<div class="empty-note">অভিনন্দন! এই সেশনে কোনো ভুল হয়নি।</div>';
+    } else {
+      html += '<div class="review-list">';
+      wrongItems.forEach(function(it){
+        var q = it.q;
+        html += '<div class="review-item">';
+        html += '<div class="rq">'+escapeHtml(q.q)+'</div>';
+        html += '<div class="ra wrong">আপনার উত্তর: '+escapeHtml(q.options[it.picked])+'</div>';
+        html += '<div class="ra correct">সঠিক উত্তর: '+escapeHtml(q.options[q.answerIndex])+'</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    root.innerHTML = html;
+
+    byId("retrySame").addEventListener("click", function(){
+      startSession(state.subjectKey, state.label);
+    });
+    byId("goHome").addEventListener("click", renderHome);
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  // map answer letter (A/B/C/D) to index 0-3, precompute once
+  var LETTER_TO_IDX = {A:0,B:1,C:2,D:3};
+  QUESTIONS.forEach(function(q){
+    q.answerIndex = LETTER_TO_IDX[q.answer];
+  });
+
+  renderHome();
+})();
+</script>
+</body>
+</html>
